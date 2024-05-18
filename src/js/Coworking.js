@@ -1,31 +1,97 @@
 import React, { useState } from 'react';
+import { tambah_data } from './services';
+import Swal from 'sweetalert2';
+
+const today = new Date();
+const year = today.getFullYear();
+const month = String(today.getMonth() + 1).padStart(2, '0');
+const day = String(today.getDate()).padStart(2, '0');
+const formattedDate = `${year}-${month}-${day}`;
+
+const alertBerhasil = () => {
+    Swal.fire({
+        icon: 'success',
+        title: 'Berhasil, data anda sudah tersimpan',
+        text: 'Terimakasih atas partisipasinya ..',
+        showConfirmButton: false,
+        timer: 3500,
+    }).then(() => {
+        window.location.reload();
+    });
+};
+
+const alertError = (err) => {
+    Swal.fire({
+        icon: 'error',
+        title: 'Error, Terjadi Kesalahan!',
+        text: `Terjadi kesalahan pada "${err} .."`
+    }).then((result) => {
+        if (result.isConfirmed || result.isDismissed) {
+            window.location.reload();
+        }
+    });
+};
 
 const Coworking = ()=>{
+    const [nama, setNama] = useState('');
+    const [alamat, setAlamat] = useState('');
     const [nohp, setNohp] = useState('');
-    const handleKirim = ()=>{
-        let tool = document.querySelector('#tooltip');
-        let inputnohp = document.querySelector('#inputnohp');
-        if (nohp === '') {
-            tool.classList.add('d-block');
-            inputnohp.classList.add('is-invalid');
-        } else {
-            tool.classList.remove('d-block');
-            inputnohp.classList.remove('is-invalid');
+    
+    const handleKirim = async()=>{
+        let data = {};
+        if(handleNama(nama) && handleNohp(nohp)){
+            data = {
+                nama : nama,
+                alamat: alamat,
+                nohp: nohp,
+                tgl: formattedDate
+            }
+            try{
+                let result = await tambah_data('tb_coworking', data);
+                if(result.success === true){
+                    alertBerhasil();
+                }else{
+                    alertError(result.message);
+                    console.log(result.message);
+                }
+            } catch(error) {
+                alertError(error);
+                console.error('Error posting', error);
+            }
         }
     };
 
     const handleNohp = (value) => {
-        let tool = document.querySelector('#tooltip');
+        let tool = document.querySelector('#tooltipnohp');
         let inputnohp = document.querySelector('#inputnohp');
         if (value === '') {
             tool.classList.add('d-block');
             inputnohp.classList.add('is-invalid');
+            setNohp(value);
+            return false;
         } else {
             tool.classList.remove('d-block');
             inputnohp.classList.remove('is-invalid');
+            setNohp(value);
+            return true;
         }
-        setNohp(value);
     };
+
+    const handleNama = (value) =>{
+        let tool = document.querySelector('#tooltipnama');
+        let inputnama = document.querySelector('#inputnama');
+        if (value === '') {
+            tool.classList.add('d-block');
+            inputnama.classList.add('is-invalid');
+            setNama(value);
+            return false;
+        } else {
+            tool.classList.remove('d-block');
+            inputnama.classList.remove('is-invalid');
+            setNama(value);
+            return true;
+        }
+    }
 
     return(
         <div>
@@ -44,14 +110,17 @@ const Coworking = ()=>{
                                 <div className='col'>
                                     <form>
                                         <div className="mb-2">
-                                            <input type="nama" className="form-control" aria-describedby="nama" placeholder='Isi Namamu Disini ..' />
+                                            <input onChange={(event) => handleNama(event.target.value)} type="nama" className="form-control" id='inputnama' aria-describedby="nama" placeholder='Isi Namamu Disini ..' />
+                                            <div id='tooltipnama' className="invalid-tooltip">
+                                                Lengkapi nama mu ..
+                                            </div>
                                         </div>
                                         <div className="mb-2">
-                                        <textarea className="form-control" id="exampleFormControlTextarea1" rows="3" placeholder='Isi Alamatmu disini ..'></textarea>
+                                        <textarea onChange={(event) => setAlamat(event.target.value)} className="form-control" id="exampleFormControlTextarea1" rows="3" placeholder='Isi Alamatmu disini ..'></textarea>
                                         </div>
                                         <div className="mb-3 input-group has-validation">
                                             <input onChange={(event) => handleNohp(event.target.value)} type="text" className="form-control" id='inputnohp' aria-describedby="nama" placeholder='Lengkapi dengan nomor Hpmu ..' />
-                                            <div id='tooltip' className="invalid-tooltip">
+                                            <div id='tooltipnohp' className="invalid-tooltip">
                                                 Lengkapi nomor hp mu ..
                                             </div>
                                         </div>

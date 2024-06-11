@@ -135,8 +135,7 @@ const Repel = () =>{
                                                 <input type="text"  className="form-control" id="szEmailbakum2" name="szEmailbakum2" data-parsley-required="true" />
                                             </div>
                                         </div>
-                                        <div className="form-group basic" >
-                                            <input type="hidden" id="userid" />
+                                        <div className="form-group basic">
                                             <label className="col-md-3 control-label pemerintah hidethis" >Nama Yang Mewakili/Yang Dikuasakan<small style={{ color: 'tomato'}}>*</small></label>
                                             <label className="col-md-3 control-label badanhukum hidethis" >Nama Yang Mewakili/Yang Dikuasakan<small style={{ color: 'tomato'}}>*</small></label>
                                             <label className="col-md-3 control-label perorangan hidethis" >Nama <small style={{ color: 'tomato'}}>*</small></label>

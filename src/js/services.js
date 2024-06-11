@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = `https://${window.location.hostname}/backend/api/`;
+const BASE_URL = `https://etamu.pn-banyumas.go.id/backend/api`;
 
 
 export const ambil_data = async (query) => {

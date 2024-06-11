@@ -1,7 +1,6 @@
 {
   "name": "etamu",
   "version": "0.1.0",
-  "homepage": "https://etamu.pn-banyumas.go.id/",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",

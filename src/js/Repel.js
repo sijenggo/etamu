@@ -1,8 +1,14 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { generateRandomString , formattedDate } from './services';
+import DatePicker from 'react-datepicker';
+import { differenceInYears, parse } from 'date-fns';
+import { id } from 'date-fns/locale';
 
 const Repel = () =>{
+    const [data, setData] = useState({ userid: generateRandomString(5) });
+    const [startDate, setStartDate] = useState(null);
 
-    const handleSelect = (data) => {
+    const handleSelect = (select) => {
         let form = document.getElementById('form-pengguna');
         let satu = form.querySelectorAll('.perorangan');
         let dua = form.querySelectorAll('.pemerintah');
@@ -26,7 +32,7 @@ const Repel = () =>{
             });
         };
     
-        switch(data) {
+        switch(select) {
             case '1':
                 removeClass(satu, 'hidethis');
                 removeClass(basic, 'hidethis');
@@ -62,7 +68,53 @@ const Repel = () =>{
                 addClass(empat, 'hidethis');
                 addClass(basic, 'hidethis');
         }
-    };    
+
+        let tmpdata = {...data};
+        tmpdata.jenis = select;
+        setData(tmpdata);
+    };
+
+    const handleValidate = (val, event, input, ket) =>{
+        if(ket === 'wajib'){
+            if(val === ''){
+                event.target.classList.add('is-invalid');
+            }else{
+                event.target.classList.remove('is-invalid');
+            }
+        }
+
+        let tmpdata = {...data};
+
+        if(val !== ''){
+            tmpdata[input] = val;
+        }else{
+            delete tmpdata[input];
+        }
+
+        setData(tmpdata);
+    }
+
+    useEffect(()=>{
+        console.log(data);
+    }, [data]);
+
+    useEffect(()=>{
+        if(startDate !== null){
+            let tgl = document.getElementById('szTanggalLahir');
+            let umur = document.getElementById('szUmur');
+            let umurval = hitungUmur(formattedDate(startDate));
+            handleValidate(formattedDate(startDate), tgl, 'tgl_lahir');
+            umur.value = `${umurval}`;
+            handleValidate(umurval, umur, 'umur');
+        };
+        // eslint-disable-next-line
+    }, [startDate]);
+
+    const hitungUmur = (tanggalLahir) =>{
+        const tanggalLahirObj = parse(tanggalLahir, 'yyyy-MM-dd', new Date());
+        const umur = differenceInYears(new Date(), tanggalLahirObj);
+        return umur;
+    };
 
     return(
         <div>
@@ -85,7 +137,7 @@ const Repel = () =>{
                                             <label className="col-md-6 control-label">Jenis Pihak <small style={{ color: 'tomato'}}>*</small></label>
                                             <div className="col-md-12">
                                                 <select id="szJenisPihak" name="szJenisPihak" onChange={(event) => handleSelect(event.target.value)} className="form-control" style={{ width: '100%' }} aria-hidden="true">
-                                                    <option >Pilih</option>
+                                                    <option value="-">Pilih</option>
                                                     <option value="1">Perorangan</option>
                                                     <option value="2">Pemerintah</option>
                                                     <option value="3">Badan Hukum</option>
@@ -151,26 +203,27 @@ const Repel = () =>{
                                             <label className="col-md-6 control-label badanhukum hidethis" >Nama Yang Mewakili/Yang Dikuasakan<small style={{ color: 'tomato'}}>*</small></label>
                                             <label className="col-md-6 control-label perorangan hidethis" >Nama <small style={{ color: 'tomato'}}>*</small></label>
                                             <div className="col-md-12">
-                                                <input type="text" name="szNama"  className="form-control" id="szNama" data-parsley-required="true" />
+                                                <input onChange={(event) => handleValidate(event.target.value, event, 'nama', 'wajib')} type="text" name="szNama" className="form-control" id="szNama" data-parsley-required="true" />
                                                 <small className='form-text'>Penulisan nama tidak diperbolehkan ada tanda petik ('), karena akan bermasalah pada tahap ePayment</small>
                                             </div>
                                         </div>
                                         <div className="form-group perorangan hidethis" >
                                             <label className="col-md-6 control-label">Tempat Lahir </label>
                                             <div className="col-md-12">
-                                                <input type="text" name="szTempatLahir"  className="form-control" id="szTempatLahir" />
+                                                <input onChange={(event) => handleValidate(event.target.value, event, 'tmpt_lahir')} type="text" name="szTempatLahir"  className="form-control" id="szTempatLahir" />
                                             </div>
                                         </div>
                                         <div className="form-group perorangan hidethis" >
                                             <label className="col-md-6 control-label">Tanggal Lahir </label>
                                             <div className="col-md-12">
-                                                <input type="text" name="szTanggalLahir"  className="form-control" id="szTanggalLahir" />
+                                                <DatePicker showMonthDropdown showYearDropdown dropdownMode="select" onChange={(event) => setStartDate(event)} selected={startDate} name="szTanggalLahir" id="szTanggalLahir" dateFormat='d MMMM yyyy' className='form-control' locale={id} />
+                                                
                                             </div>
                                         </div>
                                         <div className="form-group perorangan hidethis" >
                                             <label className="col-md-6 control-label">Umur/Usia </label>
                                             <div className="col-md-12">
-                                                <input type="text" name="szUmur"  className="form-control" id="szUmur" />
+                                                <input type="text" name="szUmur" className="form-control" id="szUmur" />
                                             </div>
                                         </div>
                                         <div className="form-group basic hidethis" >
@@ -387,7 +440,7 @@ const Repel = () =>{
                                                 </select>
                                             </div>
                                         </div>
-                                        <div className="mt-3 text-end">
+                                        <div className="mt-3 text-end basic hidethis">
                                             <button className='btn btn-sm btn-success'>Simpan</button>
                                         </div>
                                     </form>

@@ -126,3 +126,16 @@ p {
 .hidethis{
   display: none !important;
 }
+
+.control-label{
+  font-size: small;
+  font-weight: bold;
+}
+
+.form-text{
+  font-size: xx-small !important;
+}
+
+.form-group{
+  margin-bottom: 9px;
+}

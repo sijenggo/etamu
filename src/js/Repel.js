@@ -8,6 +8,7 @@ const Repel = () =>{
         let dua = form.querySelectorAll('.pemerintah');
         let tiga = form.querySelectorAll('.badanhukum');
         let empat = form.querySelectorAll('.keduanya');
+        let basic = form.querySelectorAll('.basic');
     
         const removeClass = (nodeList, className) => {
             nodeList.forEach((node) => {
@@ -27,33 +28,39 @@ const Repel = () =>{
     
         switch(data) {
             case '1':
-                console.log('perorangan');
                 removeClass(satu, 'hidethis');
+                removeClass(basic, 'hidethis');
                 addClass(dua, 'hidethis');
                 addClass(tiga, 'hidethis');
+                addClass(empat, 'hidethis');
                 break;
             case '2':
-                console.log('pemerintah');
                 removeClass(dua, 'hidethis');
                 removeClass(empat, 'hidethis');
+                removeClass(basic, 'hidethis');
                 addClass(satu, 'hidethis');
                 addClass(tiga, 'hidethis');
                 break;
             case '3':
-                console.log('badanhukum');
                 removeClass(tiga, 'hidethis');
                 removeClass(empat, 'hidethis');
+                removeClass(basic, 'hidethis');
                 addClass(satu, 'hidethis');
                 addClass(dua, 'hidethis');
                 break;
             case '4':
-                console.log('kuasa');
+                removeClass(satu, 'hidethis');
+                removeClass(basic, 'hidethis');
+                addClass(dua, 'hidethis');
+                addClass(tiga, 'hidethis');
+                addClass(empat, 'hidethis');
+                break;
+            default:
                 addClass(satu, 'hidethis');
                 addClass(dua, 'hidethis');
                 addClass(tiga, 'hidethis');
-                break;
-            default:
-                console.log('default');
+                addClass(empat, 'hidethis');
+                addClass(basic, 'hidethis');
         }
     };    
 
@@ -75,8 +82,8 @@ const Repel = () =>{
                                 <div className='col mb-4'>
                                     <form className="form-horizontal" id="form-pengguna" noValidate>
                                         <div className="form-group">
-                                            <label className="col-md-3 control-label">Jenis Pihak <small style={{ color: 'tomato'}}>*</small></label>
-                                            <div className="col-md-9">
+                                            <label className="col-md-6 control-label">Jenis Pihak <small style={{ color: 'tomato'}}>*</small></label>
+                                            <div className="col-md-12">
                                                 <select id="szJenisPihak" name="szJenisPihak" onChange={(event) => handleSelect(event.target.value)} className="form-control" style={{ width: '100%' }} aria-hidden="true">
                                                     <option >Pilih</option>
                                                     <option value="1">Perorangan</option>
@@ -87,92 +94,96 @@ const Repel = () =>{
                                             </div>
                                         </div>
                                         <div className="form-group keduanya hidethis">
-                                            <label className="col-md-3 control-label badanhukum hidethis" >Nama Perusahan/Organisasi<small style={{ color: 'tomato'}}>*</small></label>
-                                            <label className="col-md-3 control-label pemerintah hidethis" >Nama Instansi<small style={{ color: 'tomato'}}>*</small></label>
-                                            <div className="col-md-9">
+                                            <label className="col-md-6 control-label badanhukum hidethis" >Nama Perusahan/Organisasi<small style={{ color: 'tomato'}}>*</small></label>
+                                            <label className="col-md-6 control-label pemerintah hidethis" >Nama Instansi<small style={{ color: 'tomato'}}>*</small></label>
+                                            <div className="col-md-12">
                                                 <input type="text"  className="form-control" id="szOrganisasi" name="szOrganisasi" />
                                             </div>
                                         </div>
                                         <div className="form-group badanhukum hidethis">
-                                            <label className="col-md-3 control-label">Tanggal &amp; Nomor Akta Pendirian<small style={{ color: 'tomato'}}>*</small></label>
-                                            <div className="col-md-4">
-                                                <input type="text" name="szTanggalakta"  className="form-control datepicker" id="szTanggalakta" />
-                                            </div>
-                                            <div className="col-md-5">
-                                                <input type="text"  className="form-control" id="szNmrakta" name="szNmrakta" />
-                                            </div>
-                                        </div>
-                                        <div className="form-group badanhukum hidethis" >
-                                            <label className="col-md-3 control-label">Tanggal &amp; Nomor SK Menteri Hukum dan HAM<small style={{ color: 'tomato'}}>*</small></label>
-                                            <div className="col-md-4">
-                                                <input type="text" name="szTanggalsk"  className="form-control datepicker" id="szTanggalsk" />
-                                            </div>
-                                            <div className="col-md-5">
-                                                <input type="text"  className="form-control" id="szNomorsk" name="szNomorsk" />
+                                            <label className="col-md-6 control-label">Tanggal &amp; Nomor Akta Pendirian<small style={{ color: 'tomato'}}>*</small></label>
+                                            <div className='row'>
+                                                <div className="col-md-6">
+                                                    <input type="text" name="szTanggalakta"  className="form-control datepicker" id="szTanggalakta" />
+                                                </div>
+                                                <div className="col-md-6">
+                                                    <input type="text"  className="form-control" id="szNmrakta" name="szNmrakta" />
+                                                </div>
                                             </div>
                                         </div>
                                         <div className="form-group badanhukum hidethis" >
-                                            <label className="col-md-3 control-label">Alamat Badan Hukum<small style={{ color: 'tomato'}}>*</small></label>
-                                            <div className="col-md-9">
+                                            <label className="col-md-6 control-label">Tanggal &amp; Nomor SK Menteri Hukum dan HAM<small style={{ color: 'tomato'}}>*</small></label>
+                                            <div className='row'>
+                                                <div className="col-md-6">
+                                                    <input type="text" name="szTanggalsk"  className="form-control datepicker" id="szTanggalsk" />
+                                                </div>
+                                                <div className="col-md-6">
+                                                    <input type="text"  className="form-control" id="szNomorsk" name="szNomorsk" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="form-group badanhukum hidethis" >
+                                            <label className="col-md-6 control-label">Alamat Badan Hukum<small style={{ color: 'tomato'}}>*</small></label>
+                                            <div className="col-md-12">
                                                 <input type="text"  className="form-control" id="szAlamatbakum1" name="szAlamatbakum1" data-parsley-required="true" />
                                             </div>
                                         </div>
                                         <div className="form-group pemerintah hidethis" >
-                                            <label className="col-md-3 control-label">Alamat Instansi<small style={{ color: 'tomato'}}>*</small></label>
-                                            <div className="col-md-9">
+                                            <label className="col-md-6 control-label">Alamat Instansi<small style={{ color: 'tomato'}}>*</small></label>
+                                            <div className="col-md-12">
                                                 <input type="text"  className="form-control" id="szAlamatbakum2" name="szAlamatbakum2" data-parsley-required="true" />
                                             </div>
                                         </div>
                                         <div className="form-group badanhukum hidethis" >
-                                            <label className="col-md-3 control-label">E-Mail Badan Hukum<small style={{ color: 'tomato'}}>*</small></label>
-                                            <div className="col-md-9">
+                                            <label className="col-md-6 control-label">E-Mail Badan Hukum<small style={{ color: 'tomato'}}>*</small></label>
+                                            <div className="col-md-12">
                                                 <input type="text"  className="form-control" id="szEmailbakum1" name="szEmailbakum1" data-parsley-required="true" />
                                             </div>
                                         </div>
                                         <div className="form-group pemerintah hidethis" >
-                                            <label className="col-md-3 control-label">E-Mail Instansi<small style={{ color: 'tomato'}}>*</small></label>
-                                            <div className="col-md-9">
+                                            <label className="col-md-6 control-label">E-Mail Instansi<small style={{ color: 'tomato'}}>*</small></label>
+                                            <div className="col-md-12">
                                                 <input type="text"  className="form-control" id="szEmailbakum2" name="szEmailbakum2" data-parsley-required="true" />
                                             </div>
                                         </div>
-                                        <div className="form-group basic">
-                                            <label className="col-md-3 control-label pemerintah hidethis" >Nama Yang Mewakili/Yang Dikuasakan<small style={{ color: 'tomato'}}>*</small></label>
-                                            <label className="col-md-3 control-label badanhukum hidethis" >Nama Yang Mewakili/Yang Dikuasakan<small style={{ color: 'tomato'}}>*</small></label>
-                                            <label className="col-md-3 control-label perorangan hidethis" >Nama <small style={{ color: 'tomato'}}>*</small></label>
-                                            <div className="col-md-9">
+                                        <div className="form-group basic hidethis">
+                                            <label className="col-md-6 control-label pemerintah hidethis" >Nama Yang Mewakili/Yang Dikuasakan<small style={{ color: 'tomato'}}>*</small></label>
+                                            <label className="col-md-6 control-label badanhukum hidethis" >Nama Yang Mewakili/Yang Dikuasakan<small style={{ color: 'tomato'}}>*</small></label>
+                                            <label className="col-md-6 control-label perorangan hidethis" >Nama <small style={{ color: 'tomato'}}>*</small></label>
+                                            <div className="col-md-12">
                                                 <input type="text" name="szNama"  className="form-control" id="szNama" data-parsley-required="true" />
                                                 <small className='form-text'>Penulisan nama tidak diperbolehkan ada tanda petik ('), karena akan bermasalah pada tahap ePayment</small>
                                             </div>
                                         </div>
                                         <div className="form-group perorangan hidethis" >
-                                            <label className="col-md-3 control-label">Tempat Lahir </label>
-                                            <div className="col-md-9">
+                                            <label className="col-md-6 control-label">Tempat Lahir </label>
+                                            <div className="col-md-12">
                                                 <input type="text" name="szTempatLahir"  className="form-control" id="szTempatLahir" />
                                             </div>
                                         </div>
                                         <div className="form-group perorangan hidethis" >
-                                            <label className="col-md-3 control-label">Tanggal Lahir </label>
-                                            <div className="col-md-9">
+                                            <label className="col-md-6 control-label">Tanggal Lahir </label>
+                                            <div className="col-md-12">
                                                 <input type="text" name="szTanggalLahir"  className="form-control" id="szTanggalLahir" />
                                             </div>
                                         </div>
                                         <div className="form-group perorangan hidethis" >
-                                            <label className="col-md-3 control-label">Umur/Usia </label>
-                                            <div className="col-md-9">
+                                            <label className="col-md-6 control-label">Umur/Usia </label>
+                                            <div className="col-md-12">
                                                 <input type="text" name="szUmur"  className="form-control" id="szUmur" />
                                             </div>
                                         </div>
-                                        <div className="form-group basic" >
-                                            <label className="col-md-3 control-label pemerintah hidethis" >NIP<small style={{ color: 'tomato'}}>*</small></label>
-                                            <label className="col-md-3 control-label badanhukum hidethis" >Nomor Induk Kependudukan Yang Mewakili / Yang Dikuasakan<small style={{ color: 'tomato'}}>*</small></label>
-                                            <label className="col-md-3 control-label perorangan hidethis" >Nomor Induk Kependudukan<small style={{ color: 'tomato'}}>*</small></label>
-                                            <div className="col-md-9">
+                                        <div className="form-group basic hidethis" >
+                                            <label className="col-md-6 control-label pemerintah hidethis" >NIP<small style={{ color: 'tomato'}}>*</small></label>
+                                            <label className="col-md-6 control-label badanhukum hidethis" >Nomor Induk Kependudukan Yang Mewakili / Yang Dikuasakan<small style={{ color: 'tomato'}}>*</small></label>
+                                            <label className="col-md-6 control-label perorangan hidethis" >Nomor Induk Kependudukan<small style={{ color: 'tomato'}}>*</small></label>
+                                            <div className="col-md-12">
                                                 <input type="text"  className="form-control" id="szNik" name="szNik" data-parsley-required="true" />
                                             </div>
                                         </div>
-                                        <div className="form-group basic" >
-                                            <label className="col-md-3 control-label">Bank<small style={{ color: 'tomato'}}>*</small></label>
-                                            <div className="col-md-9">
+                                        <div className="form-group basic hidethis" >
+                                            <label className="col-md-6 control-label">Bank<small style={{ color: 'tomato'}}>*</small></label>
+                                            <div className="col-md-12">
                                                 <select id="szBank" name="szBank" className="form-control " style={{ width: '100%' }} data-parsley-required="true" aria-hidden="true">
                                                     <option >Pilih</option>
                                                     <option value="1">A N Z PANIN</option>
@@ -263,47 +274,49 @@ const Repel = () =>{
                                                 </select>
                                             </div>
                                         </div>
-                                        <div className="form-group basic" >
-                                            <label className="col-md-3 control-label">No Rekening<small style={{ color: 'tomato'}}>*</small></label>
-                                            <div className="col-md-9">
+                                        <div className="form-group basic hidethis" >
+                                            <label className="col-md-6 control-label">No Rekening<small style={{ color: 'tomato'}}>*</small></label>
+                                            <div className="col-md-12">
                                                 <input type="text"  className="form-control" id="szNoRekening" name="szNoRekening" data-parsley-required="true" />
                                             </div>
                                         </div>
-                                        <div className="form-group basic" >
-                                            <label className="col-md-3 control-label">Akun Bank<small style={{ color: 'tomato'}}>*</small></label>
-                                            <div className="col-md-9">
+                                        <div className="form-group basic hidethis" >
+                                            <label className="col-md-6 control-label">Akun Bank<small style={{ color: 'tomato'}}>*</small></label>
+                                            <div className="col-md-12">
                                                 <input type="text"  className="form-control" id="szAkunBank" name="szAkunBank" data-parsley-required="true" />
                                             </div>
                                         </div>
-                                        <div className="form-group basic" >
-                                            <label className="col-md-3 control-label">Nomor Telepon</label>
-                                            <div className="col-md-9">
+                                        <div className="form-group basic hidethis" >
+                                            <label className="col-md-6 control-label">Nomor Telepon</label>
+                                            <div className="col-md-12">
                                                 <input type="text"  className="form-control" id="szNoTelepon" name="szNoTelepon" />
                                             </div>
                                         </div>
-                                        <div className="form-group basic" >
-                                            <label className="col-md-3 control-label">Handphone</label>
-                                            <div className="col-md-9">
+                                        <div className="form-group basic hidethis" >
+                                            <label className="col-md-6 control-label">Handphone</label>
+                                            <div className="col-md-12">
                                             <input type="text"  className="form-control" id="szHp" name="szHp" />
                                             </div>
                                         </div>
-                                        <div className="form-group basic" >
-                                            <label className="col-md-3 control-label pemerintah hidethis">E-Mail Yang Mewakili / Yang Dikuasakan<small style={{ color: 'tomato'}}>*</small></label>
-                                            <label className="col-md-3 control-label badanhukum hidethis">E-Mail Yang Mewakili / Yang Dikuasakan<small style={{ color: 'tomato'}}>*</small></label>
-                                            <label className="col-md-3 control-label perorangan">E-Mail <small style={{ color: 'tomato'}}>*</small></label>
-                                            <div className="col-md-9">
+                                        <div className="form-group basic hidethis" >
+                                            <label className="col-md-6 control-label pemerintah hidethis">E-Mail Yang Mewakili / Yang Dikuasakan<small style={{ color: 'tomato'}}>*</small></label>
+                                            <label className="col-md-6 control-label badanhukum hidethis">E-Mail Yang Mewakili / Yang Dikuasakan<small style={{ color: 'tomato'}}>*</small></label>
+                                            <label className="col-md-6 control-label perorangan">E-Mail <small style={{ color: 'tomato'}}>*</small></label>
+                                            <div className="col-md-12">
                                                 <input type="text"  className="form-control" id="email" name="szEmail" data-parsley-required="true" />
                                             </div>
                                         </div>
-                                        <div className="form-group basic" >
-                                            <label className="col-md-3 control-label perorangan hidethis">Alamat <small style={{ color: 'tomato'}}>*</small></label>
-                                            <div className="col-md-9">
+                                        <div className="form-group basic hidethis" >
+                                            <label className="col-md-6 control-label pemerintah hidethis">Alamat Yang Mewakili / Yang Dikuasakan<small style={{ color: 'tomato'}}>*</small></label>
+                        	                <label className="col-md-6 control-label badanhukum hidethis">Alamat Yang Mewakili / Yang Dikuasakan<small style={{ color: 'tomato'}}>*</small></label>
+                                            <label className="col-md-6 control-label perorangan hidethis">Alamat <small style={{ color: 'tomato'}}>*</small></label>
+                                            <div className="col-md-12">
                                                 <textarea className='form-control' rows={3} id="alamat" name="szAlamat"></textarea>
                                             </div>
                                         </div>
                                         <div className="form-group perorangan hidethis" >
-                                            <label className="col-md-3 control-label">Jenis Kelamin</label>
-                                            <div className="col-md-9">
+                                            <label className="col-md-6 control-label">Jenis Kelamin</label>
+                                            <div className="col-md-12">
                                                 <select id="szJenisKelamin" name="szJenisKelamin" className="form-control" style={{ width: '100%'}}  aria-hidden="true">
                                                     <option value="-">Pilih</option>
                                                     <option value="L">Laki-Laki</option>
@@ -312,8 +325,8 @@ const Repel = () =>{
                                             </div>
                                         </div>
                                         <div className="form-group perorangan hidethis" >
-                                            <label className="col-md-3 control-label">Agama</label>
-                                            <div className="col-md-9">
+                                            <label className="col-md-6 control-label">Agama</label>
+                                            <div className="col-md-12">
                                                 <select id="szAgama" name="szAgama" className="form-control" style={{ width: '100%'}}  aria-hidden="true">
                                                     <option value="-">Pilih</option>
                                                     <option value="Islam">Islam</option>
@@ -327,14 +340,14 @@ const Repel = () =>{
                                             </div>
                                         </div>
                                         <div className="form-group perorangan hidethis" >
-                                            <label className="col-md-3 control-label">Pekerjaan<small style={{ color: 'tomato'}}>*</small></label>
-                                            <div className="col-md-9">
+                                            <label className="col-md-6 control-label">Pekerjaan<small style={{ color: 'tomato'}}>*</small></label>
+                                            <div className="col-md-12">
                                                 <input type="text"  className="form-control" id="szPekerjaan" name="szPekerjaan" data-parsley-required="true" />
                                             </div>
                                         </div>
                                         <div className="form-group perorangan hidethis" >
-                                            <label className="col-md-3 control-label">Berkebutuhan Khusus</label>
-                                            <div className="col-md-9">
+                                            <label className="col-md-6 control-label">Berkebutuhan Khusus</label>
+                                            <div className="col-md-12">
                                                 <select id="szDifabel" name="szDifabel" className="form-control " style={{ width: '100%' }}  aria-hidden="true">
                                                     <option value="T">Tidak</option>
                                                     <option value="Y"> Ya</option>
@@ -342,8 +355,8 @@ const Repel = () =>{
                                             </div>
                                         </div>
                                         <div className="form-group perorangan hidethis" >
-                                            <label className="col-md-3 control-label">Status Kawin</label>
-                                            <div className="col-md-9">
+                                            <label className="col-md-6 control-label">Status Kawin</label>
+                                            <div className="col-md-12">
                                                 <select id="szStatusKawin" name="szStatusKawin" className="form-control " style={{ width: '100%' }}  aria-hidden="true">
                                                     <option value="-">Pilih</option>
                                                     <option value="1">Kawin</option>
@@ -354,8 +367,8 @@ const Repel = () =>{
                                             </div>
                                         </div>
                                         <div className="form-group perorangan hidethis" >
-                                            <label className="col-md-3 control-label">Pendidikan</label>
-                                            <div className="col-md-9">
+                                            <label className="col-md-6 control-label">Pendidikan</label>
+                                            <div className="col-md-12">
                                                 <select id="szPendidikan" name="szPendidikan" className="form-control " style={{ width: '100%' }}  aria-hidden="true">
                                                     <option value="-">Pilih</option>
                                                     <option value="0">Tidak Ada</option>

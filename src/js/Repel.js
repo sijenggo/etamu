@@ -6,7 +6,10 @@ import { id } from 'date-fns/locale';
 
 const Repel = () =>{
     const [data, setData] = useState({ userid: generateRandomString(5) });
+    //const [tempData, setTemp] = useState(null);
     const [startDate, setStartDate] = useState(null);
+    const [startDateDua, setStartDateDua] = useState(null);
+    const [startDateTiga, setStartDateTiga] = useState(null);
 
     const handleSelect = (select) => {
         let form = document.getElementById('form-pengguna');
@@ -69,39 +72,211 @@ const Repel = () =>{
                 addClass(basic, 'hidethis');
         }
 
-        let tmpdata = {...data};
-        tmpdata.jenis = select;
-        setData(tmpdata);
+        resetData(data, { userid: data.userid, jenis: select});
+        resetForm();
     };
 
-    const handleValidate = (val, event, input, ket) =>{
-        if(ket === 'wajib'){
-            if(val === ''){
-                event.target.classList.add('is-invalid');
-            }else{
-                event.target.classList.remove('is-invalid');
+    const resetData = (obj, initialProps) => {
+        let newObj = {};
+        for (let key in initialProps) {
+            if (initialProps.hasOwnProperty(key)) {
+                newObj[key] = initialProps[key];
             }
         }
 
+        for (let key in obj) {
+            if (obj.hasOwnProperty(key)) {
+                delete obj[key];
+            }
+        }
+        for (let key in newObj) {
+            if (newObj.hasOwnProperty(key)) {
+                obj[key] = newObj[key];
+            }
+        }
+        setData(newObj);
+    }
+
+    const resetForm = () => {
+        let form = document.getElementById('form-pengguna');
+        let inputs = form.querySelectorAll('input, select, textarea');
+        let elements = document.querySelectorAll('.invalid-feedback');
+        elements.forEach((element) => {
+            element.remove();
+        });
+        inputs.forEach(input => {
+            if (input.type === 'checkbox' || input.type === 'radio') {
+                input.checked = false;
+            } else if(input.name !== 'jenis'){
+                input.classList.remove('is-invalid');
+                input.value = '';
+            }
+        });
+
+        setStartDate(null);
+        setStartDateDua(null);
+        setStartDateTiga(null);
+    }
+
+    const handleValidate = (val, event, input, ket) =>{
+        let stat = false;
+        let value = val;
+        let newDiv = document.createElement('div');
+        newDiv.id = `validation-message-${input}`;
+
+        if (ket === 'wajib') {
+            if (!event.isTrusted) {
+                if (val === '') {
+                    newDiv.className = 'invalid-feedback';
+                    newDiv.innerHTML = 'Tidak boleh kosong ..';
+                    let existingDiv = document.getElementById(`validation-message-${input}`);
+                    if (!existingDiv) {
+                        event.parentNode.insertBefore(newDiv, event.nextSibling);
+                    }
+                    event.classList.add('is-invalid');
+                    event.focus();
+                } else {
+                    let existingDiv = document.getElementById(`validation-message-${input}`);
+                    if (existingDiv) {
+                        existingDiv.remove();
+                    }
+                    event.classList.remove('is-invalid');
+                }
+            } else {
+                if (val === '') {
+                    newDiv.className = 'invalid-feedback';
+                    newDiv.innerHTML = 'Tidak boleh kosong ..';
+                    let existingDiv = document.getElementById(`validation-message-${input}`);
+                    if (!existingDiv) {
+                        event.target.parentNode.insertBefore(newDiv, event.target.nextSibling);
+                    }
+                    event.target.classList.add('is-invalid');
+                    event.target.focus();
+                } else {
+                    let existingDiv = document.getElementById(`validation-message-${input}`);
+                    if (existingDiv) {
+                        existingDiv.remove();
+                    }
+                    event.target.classList.remove('is-invalid');
+                }
+            }
+        }
+
+        switch(input){
+            case 'nama':
+                value = validateRegex(val, event, input, 'Huruf');
+            break;
+            case 'tmpt_lahir':
+                value = validateRegex(val, event, input, 'Huruf');
+            break;
+            case 'nik':
+                value = validateRegex(val, event, input, 'Angka');
+            break;
+            case 'rek':
+                value = validateRegex(val, event, input, 'Angka');
+            break;
+            case 'akun':
+                value = validateRegex(val, event, input, 'Huruf');
+            break;
+            case 'no_telp':
+                value = validateRegex(val, event, input, 'Angka');
+            break;
+            case 'no_hp':
+                value = validateRegex(val, event, input, 'Angka');
+            break;
+            case 'email':
+                value = validateRegex(val, event, input, 'Email');
+            break;
+            case 'email_instansi':
+                value = validateRegex(val, event, input, 'Email');
+            break;
+            default:
+        };
+
         let tmpdata = {...data};
 
-        if(val !== ''){
-            tmpdata[input] = val;
+        if(val !== '' && value !== false){
+            tmpdata[input] = value;
+            stat = true;
         }else{
             delete tmpdata[input];
+            stat = false;
         }
 
         setData(tmpdata);
+        return stat;
     }
 
-    useEffect(()=>{
+    const validateRegex = (val, event, input, tipe) =>{
+        let regex;
+        let teks;
+        teks = `Hanya boleh menggunakan (${tipe} tanpa Simbol) ..`;
+        switch(tipe){
+            case 'Huruf':
+                regex = /^[A-Za-z\s]+$/;
+            break;
+            case 'Angka':
+                regex = /^[0-9]+$/;
+            break;
+            case 'Email':
+                regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                teks = 'Gunakan alamat Email yang benar ..'
+            break;
+            default:
+        }
+        
+        let newDiv = document.createElement('div');
+        newDiv.id = `validation-message-${input}`;
+    
+        if (!event.isTrusted) {
+            if (regex.test(val)) {
+                let existingDiv = document.getElementById(`validation-message-${input}`);
+                if (existingDiv) {
+                    existingDiv.remove();
+                }
+                event.classList.remove('is-invalid');
+                return val;
+            } else {
+                newDiv.className = 'invalid-feedback';
+                newDiv.innerHTML = teks;
+                let existingDiv = document.getElementById(`validation-message-${input}`);
+                if (!existingDiv) {
+                    event.parentNode.insertBefore(newDiv, event.nextSibling);
+                }
+                event.classList.add('is-invalid');
+                event.focus();
+                return false;
+            }
+        }else{
+            if (regex.test(val)) {
+                let existingDiv = document.getElementById(`validation-message-${input}`);
+                if (existingDiv) {
+                    existingDiv.remove();
+                }
+                event.target.classList.remove('is-invalid');
+                return val;
+            } else {
+                newDiv.className = 'invalid-feedback';
+                newDiv.innerHTML = teks;
+                let existingDiv = document.getElementById(`validation-message-${input}`);
+                if (!existingDiv) {
+                    event.target.parentNode.insertBefore(newDiv, event.target.nextSibling);
+                }
+                event.target.classList.add('is-invalid');
+                event.target.focus();
+                return false;
+            }
+        }
+    };
+
+    /*useEffect(()=>{
         console.log(data);
-    }, [data]);
+    }, [data]);*/
 
     useEffect(()=>{
         if(startDate !== null){
-            let tgl = document.getElementById('szTanggalLahir');
-            let umur = document.getElementById('szUmur');
+            let tgl = document.getElementById('tgl_lahir');
+            let umur = document.getElementById('umur');
             let umurval = hitungUmur(formattedDate(startDate));
             handleValidate(formattedDate(startDate), tgl, 'tgl_lahir');
             umur.value = `${umurval}`;
@@ -110,10 +285,58 @@ const Repel = () =>{
         // eslint-disable-next-line
     }, [startDate]);
 
+    useEffect(()=>{
+        if(startDateDua !== null){
+            let tgl = document.getElementById('tgl_pendirian');
+            handleValidate(formattedDate(startDateDua), tgl, 'tgl_pendirian', 'wajib');
+        };
+        // eslint-disable-next-line
+    },[startDateDua]);
+    
+    useEffect(()=>{
+        if(startDateTiga !== null){
+            let tgl = document.getElementById('tgl_sk');
+            handleValidate(formattedDate(startDateTiga), tgl, 'tgl_sk', 'wajib');
+        };
+        // eslint-disable-next-line
+    },[startDateTiga]);
+
     const hitungUmur = (tanggalLahir) =>{
         const tanggalLahirObj = parse(tanggalLahir, 'yyyy-MM-dd', new Date());
         const umur = differenceInYears(new Date(), tanggalLahirObj);
         return umur;
+    };
+
+    const handleSimpan = (event) =>{
+        event.preventDefault();
+        let fields;
+        let stat;
+        switch(data.jenis){
+            case '1':
+                fields = ['nama', 'nik', 'bank', 'rek', 'akun', 'email', 'alamat', 'pekerjaan'];
+                fields.forEach((field) => {
+                    if (!data.hasOwnProperty(field)) {
+                        stat = handleValidate('', document.getElementById(field), field, 'wajib');
+                    }else{
+                        stat = handleValidate(data[field], document.getElementById(field), field, 'wajib');
+                    }
+                });
+            break;
+            case '2':
+                fields = ['nama_instansi', 'alamat_instansi', 'email_instansi', 'nama', 'nik', 'bank', 'rek', 'akun', 'email', 'alamat'];
+                fields.forEach((field) => {
+                    if (!data.hasOwnProperty(field)) {
+                        stat = handleValidate('', document.getElementById(field), field, 'wajib');
+                    }else{
+                        stat = handleValidate(data[field], document.getElementById(field), field, 'wajib');
+                    }
+                });
+            break;
+            default:
+        }
+        
+        console.log(stat);
+        console.log(data);
     };
 
     return(
@@ -132,11 +355,11 @@ const Repel = () =>{
 							</div>
                             <div className='row'>
                                 <div className='col mb-4'>
-                                    <form className="form-horizontal" id="form-pengguna" noValidate>
+                                    <form className="form-horizontal" id="form-pengguna" onSubmit={handleSimpan} noValidate>
                                         <div className="form-group">
                                             <label className="col-md-6 control-label">Jenis Pihak <small style={{ color: 'tomato'}}>*</small></label>
                                             <div className="col-md-12">
-                                                <select id="szJenisPihak" name="szJenisPihak" onChange={(event) => handleSelect(event.target.value)} className="form-control" style={{ width: '100%' }} aria-hidden="true">
+                                                <select id="jenis" name="jenis" onChange={(event) => handleSelect(event.target.value)} className="form-control" style={{ width: '100%' }} aria-hidden="true">
                                                     <option value="-">Pilih</option>
                                                     <option value="1">Perorangan</option>
                                                     <option value="2">Pemerintah</option>
@@ -149,53 +372,53 @@ const Repel = () =>{
                                             <label className="col-md-6 control-label badanhukum hidethis" >Nama Perusahan/Organisasi<small style={{ color: 'tomato'}}>*</small></label>
                                             <label className="col-md-6 control-label pemerintah hidethis" >Nama Instansi<small style={{ color: 'tomato'}}>*</small></label>
                                             <div className="col-md-12">
-                                                <input type="text"  className="form-control" id="szOrganisasi" name="szOrganisasi" />
+                                                <input type="text" onChange={(event) => handleValidate(event.target.value, event, 'nama_instansi', 'wajib')} className="form-control" id="nama_instansi" name="nama_instansi" />
                                             </div>
                                         </div>
                                         <div className="form-group badanhukum hidethis">
                                             <label className="col-md-6 control-label">Tanggal &amp; Nomor Akta Pendirian<small style={{ color: 'tomato'}}>*</small></label>
                                             <div className='row'>
-                                                <div className="col-md-6">
-                                                    <input type="text" name="szTanggalakta"  className="form-control datepicker" id="szTanggalakta" />
+                                                <div className="col-md-6 mb-3">
+                                                    <DatePicker placeholderText='Tanggal akta pendirian' showMonthDropdown showYearDropdown dropdownMode="select" onChange={(event) => setStartDateDua(event)} selected={startDateDua} name="tgl_pendirian" id="tgl_pendirian" dateFormat='d MMMM yyyy' className='form-control' locale={id} />
                                                 </div>
                                                 <div className="col-md-6">
-                                                    <input type="text"  className="form-control" id="szNmrakta" name="szNmrakta" />
+                                                    <input type="text" onChange={(event) => handleValidate(event.target.value, event, 'nomor_akta', 'wajib')} className="form-control" placeholder='Nomor akta pendirian' id="nomor_akta" name="nomor_akta" />
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="form-group badanhukum hidethis" >
                                             <label className="col-md-6 control-label">Tanggal &amp; Nomor SK Menteri Hukum dan HAM<small style={{ color: 'tomato'}}>*</small></label>
                                             <div className='row'>
-                                                <div className="col-md-6">
-                                                    <input type="text" name="szTanggalsk"  className="form-control datepicker" id="szTanggalsk" />
+                                                <div className="col-md-6 mb-3">
+                                                <DatePicker placeholderText='Tanggal SK Menteri Hukum dan HAM' showMonthDropdown showYearDropdown dropdownMode="select" onChange={(event) => setStartDateTiga(event)} selected={startDateTiga} name="tgl_sk" id="tgl_sk" dateFormat='d MMMM yyyy' className='form-control' locale={id} />
                                                 </div>
                                                 <div className="col-md-6">
-                                                    <input type="text"  className="form-control" id="szNomorsk" name="szNomorsk" />
+                                                    <input type="text" onChange={(event) => handleValidate(event.target.value, event, 'nomor_sk', 'wajib')} className="form-control" placeholder='Nomor SK Menteri Hukum dan Ham' id="nomor_sk" name="nomor_sk" />
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="form-group badanhukum hidethis" >
                                             <label className="col-md-6 control-label">Alamat Badan Hukum<small style={{ color: 'tomato'}}>*</small></label>
                                             <div className="col-md-12">
-                                                <input type="text"  className="form-control" id="szAlamatbakum1" name="szAlamatbakum1" data-parsley-required="true" />
+                                                <textarea onChange={(event) => handleValidate(event.target.value, event, 'alamat_instansi', 'wajib')} className='form-control' rows={3} id="alamat_instansi" name="alamat_instansi"></textarea>
                                             </div>
                                         </div>
                                         <div className="form-group pemerintah hidethis" >
                                             <label className="col-md-6 control-label">Alamat Instansi<small style={{ color: 'tomato'}}>*</small></label>
                                             <div className="col-md-12">
-                                                <input type="text"  className="form-control" id="szAlamatbakum2" name="szAlamatbakum2" data-parsley-required="true" />
+                                                <textarea onChange={(event) => handleValidate(event.target.value, event, 'alamat_instansi', 'wajib')} className='form-control' rows={3} id="alamat_instansi" name="alamat_instansi"></textarea>
                                             </div>
                                         </div>
                                         <div className="form-group badanhukum hidethis" >
                                             <label className="col-md-6 control-label">E-Mail Badan Hukum<small style={{ color: 'tomato'}}>*</small></label>
                                             <div className="col-md-12">
-                                                <input type="text"  className="form-control" id="szEmailbakum1" name="szEmailbakum1" data-parsley-required="true" />
+                                            <input type="text" onChange={(event) => handleValidate(event.target.value, event, 'email_instansi', 'wajib')} className="form-control" id="email_instansi" name="email_instansi" data-parsley-required="true" />
                                             </div>
                                         </div>
                                         <div className="form-group pemerintah hidethis" >
                                             <label className="col-md-6 control-label">E-Mail Instansi<small style={{ color: 'tomato'}}>*</small></label>
                                             <div className="col-md-12">
-                                                <input type="text"  className="form-control" id="szEmailbakum2" name="szEmailbakum2" data-parsley-required="true" />
+                                                <input type="text" onChange={(event) => handleValidate(event.target.value, event, 'email_instansi', 'wajib')} className="form-control" id="email_instansi" name="email_instansi" data-parsley-required="true" />
                                             </div>
                                         </div>
                                         <div className="form-group basic hidethis">
@@ -203,27 +426,26 @@ const Repel = () =>{
                                             <label className="col-md-6 control-label badanhukum hidethis" >Nama Yang Mewakili/Yang Dikuasakan<small style={{ color: 'tomato'}}>*</small></label>
                                             <label className="col-md-6 control-label perorangan hidethis" >Nama <small style={{ color: 'tomato'}}>*</small></label>
                                             <div className="col-md-12">
-                                                <input onChange={(event) => handleValidate(event.target.value, event, 'nama', 'wajib')} type="text" name="szNama" className="form-control" id="szNama" data-parsley-required="true" />
+                                                <input onChange={(event) => handleValidate(event.target.value, event, 'nama', 'wajib')} type="text" name="nama" className="form-control" id="nama" data-parsley-required="true" />
                                                 <small className='form-text'>Penulisan nama tidak diperbolehkan ada tanda petik ('), karena akan bermasalah pada tahap ePayment</small>
                                             </div>
                                         </div>
                                         <div className="form-group perorangan hidethis" >
                                             <label className="col-md-6 control-label">Tempat Lahir </label>
                                             <div className="col-md-12">
-                                                <input onChange={(event) => handleValidate(event.target.value, event, 'tmpt_lahir')} type="text" name="szTempatLahir"  className="form-control" id="szTempatLahir" />
+                                                <input onChange={(event) => handleValidate(event.target.value, event, 'tmpt_lahir')} type="text" name="tmpt_lahir"  className="form-control" id="tmpt_lahir" />
                                             </div>
                                         </div>
                                         <div className="form-group perorangan hidethis" >
                                             <label className="col-md-6 control-label">Tanggal Lahir </label>
                                             <div className="col-md-12">
-                                                <DatePicker showMonthDropdown showYearDropdown dropdownMode="select" onChange={(event) => setStartDate(event)} selected={startDate} name="szTanggalLahir" id="szTanggalLahir" dateFormat='d MMMM yyyy' className='form-control' locale={id} />
-                                                
+                                                <DatePicker showMonthDropdown showYearDropdown dropdownMode="select" onChange={(event) => setStartDate(event)} selected={startDate} name="tgl_lahir" id="tgl_lahir" dateFormat='d MMMM yyyy' className='form-control' locale={id} />                                              
                                             </div>
                                         </div>
                                         <div className="form-group perorangan hidethis" >
                                             <label className="col-md-6 control-label">Umur/Usia </label>
                                             <div className="col-md-12">
-                                                <input type="text" name="szUmur" className="form-control" id="szUmur" />
+                                                <input type="text" name="umur" className="form-control" id="umur" />
                                             </div>
                                         </div>
                                         <div className="form-group basic hidethis" >
@@ -231,14 +453,14 @@ const Repel = () =>{
                                             <label className="col-md-6 control-label badanhukum hidethis" >Nomor Induk Kependudukan Yang Mewakili / Yang Dikuasakan<small style={{ color: 'tomato'}}>*</small></label>
                                             <label className="col-md-6 control-label perorangan hidethis" >Nomor Induk Kependudukan<small style={{ color: 'tomato'}}>*</small></label>
                                             <div className="col-md-12">
-                                                <input type="text"  className="form-control" id="szNik" name="szNik" data-parsley-required="true" />
+                                                <input type="text" onChange={(event) => handleValidate(event.target.value, event, 'nik', 'wajib')} className="form-control" id="nik" name="nik" data-parsley-required="true" />
                                             </div>
                                         </div>
                                         <div className="form-group basic hidethis" >
                                             <label className="col-md-6 control-label">Bank<small style={{ color: 'tomato'}}>*</small></label>
                                             <div className="col-md-12">
-                                                <select id="szBank" name="szBank" className="form-control " style={{ width: '100%' }} data-parsley-required="true" aria-hidden="true">
-                                                    <option >Pilih</option>
+                                                <select id="bank" onChange={(event) => handleValidate(event.target.value, event, 'bank', 'wajib')} name="bank" className="form-control " style={{ width: '100%' }} data-parsley-required="true" aria-hidden="true">
+                                                    <option value=''>Pilih</option>
                                                     <option value="1">A N Z PANIN</option>
                                                     <option value="2">ARTHA GRAHA</option>
                                                     <option value="3">ARTOS INDONESIA</option>
@@ -330,25 +552,25 @@ const Repel = () =>{
                                         <div className="form-group basic hidethis" >
                                             <label className="col-md-6 control-label">No Rekening<small style={{ color: 'tomato'}}>*</small></label>
                                             <div className="col-md-12">
-                                                <input type="text"  className="form-control" id="szNoRekening" name="szNoRekening" data-parsley-required="true" />
+                                                <input type="text" onChange={(event) => handleValidate(event.target.value, event, 'rek', 'wajib')} className="form-control" id="rek" name="rek" data-parsley-required="true" />
                                             </div>
                                         </div>
                                         <div className="form-group basic hidethis" >
                                             <label className="col-md-6 control-label">Akun Bank<small style={{ color: 'tomato'}}>*</small></label>
                                             <div className="col-md-12">
-                                                <input type="text"  className="form-control" id="szAkunBank" name="szAkunBank" data-parsley-required="true" />
+                                                <input type="text" onChange={(event) => handleValidate(event.target.value, event, 'akun', 'wajib')} className="form-control" id="akun" name="akun" data-parsley-required="true" />
                                             </div>
                                         </div>
                                         <div className="form-group basic hidethis" >
                                             <label className="col-md-6 control-label">Nomor Telepon</label>
                                             <div className="col-md-12">
-                                                <input type="text"  className="form-control" id="szNoTelepon" name="szNoTelepon" />
+                                                <input type="text" onChange={(event) => handleValidate(event.target.value, event, 'no_telp')} className="form-control" id="no_telp" name="no_telp" />
                                             </div>
                                         </div>
                                         <div className="form-group basic hidethis" >
                                             <label className="col-md-6 control-label">Handphone</label>
                                             <div className="col-md-12">
-                                            <input type="text"  className="form-control" id="szHp" name="szHp" />
+                                            <input type="text" onChange={(event) => handleValidate(event.target.value, event, 'no_hp')} className="form-control" id="no_hp" name="no_hp" />
                                             </div>
                                         </div>
                                         <div className="form-group basic hidethis" >
@@ -356,7 +578,7 @@ const Repel = () =>{
                                             <label className="col-md-6 control-label badanhukum hidethis">E-Mail Yang Mewakili / Yang Dikuasakan<small style={{ color: 'tomato'}}>*</small></label>
                                             <label className="col-md-6 control-label perorangan">E-Mail <small style={{ color: 'tomato'}}>*</small></label>
                                             <div className="col-md-12">
-                                                <input type="text"  className="form-control" id="email" name="szEmail" data-parsley-required="true" />
+                                                <input type="text" onChange={(event) => handleValidate(event.target.value, event, 'email', 'wajib')} className="form-control" id="email" name="email" data-parsley-required="true" />
                                             </div>
                                         </div>
                                         <div className="form-group basic hidethis" >
@@ -364,13 +586,13 @@ const Repel = () =>{
                         	                <label className="col-md-6 control-label badanhukum hidethis">Alamat Yang Mewakili / Yang Dikuasakan<small style={{ color: 'tomato'}}>*</small></label>
                                             <label className="col-md-6 control-label perorangan hidethis">Alamat <small style={{ color: 'tomato'}}>*</small></label>
                                             <div className="col-md-12">
-                                                <textarea className='form-control' rows={3} id="alamat" name="szAlamat"></textarea>
+                                                <textarea onChange={(event) => handleValidate(event.target.value, event, 'alamat', 'wajib')}  className='form-control' rows={3} id="alamat" name="alamat"></textarea>
                                             </div>
                                         </div>
                                         <div className="form-group perorangan hidethis" >
                                             <label className="col-md-6 control-label">Jenis Kelamin</label>
                                             <div className="col-md-12">
-                                                <select id="szJenisKelamin" name="szJenisKelamin" className="form-control" style={{ width: '100%'}}  aria-hidden="true">
+                                                <select id="jk" onChange={(event) => handleValidate(event.target.value, event, 'jk')} name="jk" className="form-control" style={{ width: '100%'}}  aria-hidden="true">
                                                     <option value="-">Pilih</option>
                                                     <option value="L">Laki-Laki</option>
                                                     <option value="P">Perempuan</option>
@@ -380,7 +602,7 @@ const Repel = () =>{
                                         <div className="form-group perorangan hidethis" >
                                             <label className="col-md-6 control-label">Agama</label>
                                             <div className="col-md-12">
-                                                <select id="szAgama" name="szAgama" className="form-control" style={{ width: '100%'}}  aria-hidden="true">
+                                                <select id="agama" onChange={(event) => handleValidate(event.target.value, event, 'agama')} name="agama" className="form-control" style={{ width: '100%'}}  aria-hidden="true">
                                                     <option value="-">Pilih</option>
                                                     <option value="Islam">Islam</option>
                                                     <option value="Protestan">Protestan</option>
@@ -395,13 +617,13 @@ const Repel = () =>{
                                         <div className="form-group perorangan hidethis" >
                                             <label className="col-md-6 control-label">Pekerjaan<small style={{ color: 'tomato'}}>*</small></label>
                                             <div className="col-md-12">
-                                                <input type="text"  className="form-control" id="szPekerjaan" name="szPekerjaan" data-parsley-required="true" />
+                                                <input type="text" onChange={(event) => handleValidate(event.target.value, event, 'pekerjaan', 'wajib')} className="form-control" id="pekerjaan" name="pekerjaan" data-parsley-required="true" />
                                             </div>
                                         </div>
                                         <div className="form-group perorangan hidethis" >
                                             <label className="col-md-6 control-label">Berkebutuhan Khusus</label>
                                             <div className="col-md-12">
-                                                <select id="szDifabel" name="szDifabel" className="form-control " style={{ width: '100%' }}  aria-hidden="true">
+                                                <select id="khusus" onChange={(event) => handleValidate(event.target.value, event, 'khusus')} name="khusus" className="form-control " style={{ width: '100%' }}  aria-hidden="true">
                                                     <option value="T">Tidak</option>
                                                     <option value="Y"> Ya</option>
                                                 </select>
@@ -410,7 +632,7 @@ const Repel = () =>{
                                         <div className="form-group perorangan hidethis" >
                                             <label className="col-md-6 control-label">Status Kawin</label>
                                             <div className="col-md-12">
-                                                <select id="szStatusKawin" name="szStatusKawin" className="form-control " style={{ width: '100%' }}  aria-hidden="true">
+                                                <select id="status_kawin" onChange={(event) => handleValidate(event.target.value, event, 'status_kawin')} name="status_kawin" className="form-control " style={{ width: '100%' }}  aria-hidden="true">
                                                     <option value="-">Pilih</option>
                                                     <option value="1">Kawin</option>
                                                     <option value="2">Belum Kawin</option>
@@ -422,7 +644,7 @@ const Repel = () =>{
                                         <div className="form-group perorangan hidethis" >
                                             <label className="col-md-6 control-label">Pendidikan</label>
                                             <div className="col-md-12">
-                                                <select id="szPendidikan" name="szPendidikan" className="form-control " style={{ width: '100%' }}  aria-hidden="true">
+                                                <select id="pendidikan" onChange={(event) => handleValidate(event.target.value, event, 'pendidikan')} name="pendidikan" className="form-control " style={{ width: '100%' }}  aria-hidden="true">
                                                     <option value="-">Pilih</option>
                                                     <option value="0">Tidak Ada</option>
                                                     <option value="1">TK</option>
@@ -441,7 +663,7 @@ const Repel = () =>{
                                             </div>
                                         </div>
                                         <div className="mt-3 text-end basic hidethis">
-                                            <button className='btn btn-sm btn-success'>Simpan</button>
+                                            <button className='btn btn-success'>Simpan</button>
                                         </div>
                                     </form>
                                 </div>
